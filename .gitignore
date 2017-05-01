@@ -1,0 +1,13 @@
+# dataset
+data
+
+# output
+dest
+param
+log
+
+# exchange zone
+exchange
+
+# Mac .DS_Store files
+.DS_Store

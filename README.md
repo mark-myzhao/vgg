@@ -10,5 +10,6 @@
     - `/test`
   - `/label`: label for training
   - `/dest`: output (if any)
-  - `/log`: log for tensorboard
-  - `/param`: store check points
+    - `/log`: log for tensorboard
+    - `/param`: store check points
+  - `/exchange`: exchange data between server and client
