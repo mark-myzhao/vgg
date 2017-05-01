@@ -7,7 +7,7 @@ import tensorflow as tf
 # import numpy as np
 
 
-class vgg(object):
+class Vgg(object):
     """Main model."""
 
     def __init__(self, config):
@@ -16,11 +16,35 @@ class vgg(object):
         self.batch_size = config.batch_size
         self.params_dir = config.params_dir
 
+        self.channel_num = config.channel_num
+
+        self.images = tf.placeholder(
+            dtype=tf.float32,
+            shape=(self.batch_size, config.img_height, config.img_width,
+                   self.channel_num))
+        self.labels = tf.placeholder(
+            dtype=tf.float32,
+            shape=(self.batch_size, 1))
+
     def train_op(self, total_loss, global_step):
         """Get train op."""
-        # return train_op
-        # TODO
-        pass
+        self._loss_summary(total_loss)
+
+        optimizer = tf.train.AdamOptimizer()
+        grads = optimizer.compute_gradients(total_loss)
+        apply_gradient_op = optimizer.apply_gradients(grads,
+                                                      global_step=global_step)
+
+        variable_averages = tf.train.ExponentialMovingAverage(
+            self.moving_average_decay, global_step)
+        variable_averages_op = variable_averages.apply(
+            tf.trainable_variables())
+
+        with tf.control_dependencies([apply_gradient_op,
+                                      variable_averages_op]):
+            train_op = tf.no_op(name="train")
+
+        return train_op
 
     def loss(self):
         """Get loss op."""
@@ -39,10 +63,9 @@ class vgg(object):
 
     def build_model(self, is_train):
         """Get builded vgg model."""
-        fc_is_train = is_train & True
         with tf.name_scope("original_images"):
             self._image_summary(self.images, 1)
-        out_fc = self.cnn_fc(self.images, fc_is_train, 'fc')
+        out_fc = self.cnn_fc(self.images, is_train, 'fc')
         self.add_to_euclidean_loss(self.batch_size, out_fc, self.coords, 'fcn')
         return out_fc
 
@@ -77,6 +100,7 @@ class vgg(object):
                 wd=self.wd,
                 trainable=trainable
             )
+            # fully-connected
             mul = tf.matmul(flatten_bottom, weights)
             biases = self._variable_on_cpu(
                 'biases', [out_num],
@@ -104,6 +128,7 @@ class vgg(object):
                     wd=self.wd,
                     trainable=trainable
             )
+            # calculate conv
             conv = tf.nn.conv2d(bottom, kernel, [1, 1, 1, 1], padding="SAME")
             biases = self._variable_on_cpu(
                 'biases', [out_channel],

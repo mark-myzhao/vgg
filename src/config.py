@@ -13,22 +13,23 @@ class Config(object):
     # checkpoint path and filename
     logdir = "./log/train_log/"
     params_dir = "./params/"
-    load_filename = "cpm" + '-' + steps
-    save_filename = "cpm"
+    load_filename = "vgg" + '-' + steps
+    save_filename = "vgg"
 
     # iterations config
-    max_iteration = 500000
+    max_iteration = 100000
     checkpoint_iters = 2000
     summary_iters = 100
     validate_iters = 2000
 
     # image config
     points_num = 15
+    channel_num = 3  # RGB
     fm_channel = points_num + 1
     origin_height = 212
     origin_width = 256
-    img_height = 216  # img height for training
-    img_width = 256  # img width for training
+    img_height = 224  # img height for training
+    img_width = 224  # img width for training
     is_color = True
 
     # random distortion

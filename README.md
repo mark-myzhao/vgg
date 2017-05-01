@@ -25,4 +25,4 @@
 
 - ps. `.txt` format:
   - for valid images: `id_of_imgs  1` per line
-  - for invalid images: `id_of_imgs  1` per line
+  - for invalid images: `id_of_imgs -1` per line
