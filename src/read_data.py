@@ -18,7 +18,7 @@ class ImageReader():
     def __init__(self, data_path, label_path, config):
         """Initializer."""
         self.data_path = data_path
-        
+
         self.batch_size = config.batch_size
         self.class_num = config.class_num
 

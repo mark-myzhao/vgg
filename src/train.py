@@ -12,7 +12,6 @@ def main():
     """Main operations."""
     train_config = config.Config()
     with tf.Graph().as_default():
-        # TODO init reader
         reader = read_data.ImageReader('../data/JPEGImages/',
                                        '../data/labels/', train_config)
 
@@ -41,7 +40,7 @@ def main():
             if not os.path.exists(config.params_dir):
                 os.makedirs(config.params_dir)
             if os.listdir(config.params_dir) == [] or config.initialize:
-                print "Initializing Network"
+                print("Initializing Network")
                 sess.run(init_op)
             else:
                 sess.run(init_op)
@@ -55,14 +54,13 @@ def main():
         # start training
         for idx in xrange(config.max_iteration):
             with tf.device("/cpu:0"):
-                (imgs, fm, coords,
-                 begins, filename_list) = reader.get_random_batch()
+                imgs, labels, name_list = reader.get_batch()
 
             # feed data into the model
             feed_dict = {
                 model.images: imgs,
-                model.labels: coords
-            }
+                model.labels: labels
+                }
             with tf.device(config.gpu):
                 # run the training operation
                 sess.run(train_op, feed_dict=feed_dict)
