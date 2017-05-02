@@ -7,17 +7,17 @@ class Config(object):
     # util
     batch_size = 1
     initialize = True
-    steps = "-1"
+    steps = '-1'
     gpu = '/gpu:0'
 
     # training config
     class_num = 20
 
     # checkpoint path and filename
-    logdir = "./log/train_log/"
-    params_dir = "./params/"
-    load_filename = "vgg" + '-' + steps
-    save_filename = "vgg"
+    logdir = '../dest/log/'
+    params_dir = '../dest/params/'
+    load_filename = 'vgg' + '-' + steps
+    save_filename = 'vgg'
 
     # buffer
     buff_path = '../tmp/'
@@ -30,9 +30,7 @@ class Config(object):
     validate_iters = 2000
 
     # image config
-    points_num = 15
     channel_num = 3  # RGB
-    fm_channel = points_num + 1
     origin_height = 212
     origin_width = 256
     img_height = 224  # img height for training
@@ -51,6 +49,9 @@ class Config(object):
     # and others
     use_fp16 = False
 
-    def __init__(self):
+    def __init__(self, test=False, step='2000'):
         """Initializer."""
-        pass
+        if test:
+            self.batch_size = 1
+            self.initialize = False
+            self.steps = step

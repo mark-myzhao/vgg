@@ -1,5 +1,7 @@
 # VGG
 
+Implement VGG model D (16 layers) with TensorFlow ...
+
 ## Project Directory Structure
 
 - `./`: project root
@@ -12,10 +14,13 @@
   - `/dest`: output (if any)
     - `/log`: log for tensorboard
     - `/param`: store check points
+    - `/output`: output from the shell when model is training
   - `/exchange`: exchange data between server and client
   - `/tmp`: store buffer files
 
 ## Dataset Structure
+
+Source: [VOC2012](http://host.robots.ox.ac.uk/pascal/VOC/)
 
 - `VOC2012`
   - `/ImageSets`: labels of 20 classes
