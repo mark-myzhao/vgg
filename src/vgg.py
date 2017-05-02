@@ -21,6 +21,8 @@ class Vgg(object):
         self.params_dir = config.params_dir
         self.channel_num = config.channel_num
         self.moving_average_decay = config.moving_average_decay
+        self.use_fp16 = config.use_fp16
+        self.class_num = config.class_num
 
         self.images = tf.placeholder(
             dtype=tf.float32,
@@ -126,8 +128,9 @@ class Vgg(object):
         flatten_labels = tf.reshape(labels, [batch_size, -1])
         flatten_predicts = tf.reshape(predicts, [batch_size, -1])
         with tf.name_scope(name):
-            tmp = tf.nn.softmax_cross_entropy_with_logits(flatten_labels,
-                                                          flatten_predicts)
+            tmp = tf.nn.softmax_cross_entropy_with_logits(
+                labels=flatten_labels,
+                logits=flatten_predicts)
             cross_entropy_mean = tf.reduce_mean(tmp, name='cross_entropy_mean')
         tf.add_to_collection("losses", cross_entropy_mean)
 

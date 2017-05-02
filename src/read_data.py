@@ -33,8 +33,7 @@ class ImageReader():
         # handle labels
         label_buff_path = os.path.join(self.buff_path, self.buff_tl_name)
         if not os.path.isfile(label_buff_path):
-            with open(label_buff_path, 'w') as f:
-                f.write(handle_label.handle(label_path, self.buff_path))
+            handle_label.handle(label_path, self.buff_path)
 
         self.records = []
         with open(label_buff_path) as f:

@@ -10,13 +10,13 @@ import tensorflow as tf
 
 def main():
     """Main operations."""
-    train_config = config.Config()
+    t_config = config.Config()
     with tf.Graph().as_default():
         reader = read_data.ImageReader('../data/JPEGImages/',
-                                       '../data/labels/', train_config)
+                                       '../data/labels/', t_config)
 
         # init model
-        model = vgg.Vgg(train_config)
+        model = vgg.Vgg(t_config)
 
         # feed feedforward
         model.build_model(True)
@@ -37,22 +37,22 @@ def main():
         sess_config.gpu_options.allow_growth = True
         with tf.Session(config=sess_config) as sess:
             # initialize parameters or restore from previous model
-            if not os.path.exists(config.params_dir):
-                os.makedirs(config.params_dir)
-            if os.listdir(config.params_dir) == [] or config.initialize:
+            if not os.path.exists(t_config.params_dir):
+                os.makedirs(t_config.params_dir)
+            if os.listdir(t_config.params_dir) == [] or t_config.initialize:
                 print("Initializing Network")
                 sess.run(init_op)
             else:
                 sess.run(init_op)
-                model.restore(sess, saver, config.load_filename)
+                model.restore(sess, saver, t_config.load_filename)
 
             merged = tf.summary.merge_all()
-            logdir = os.path.join(config.logdir,
+            logdir = os.path.join(t_config.logdir,
                                   datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
             writer = tf.summary.FileWriter(logdir, sess.graph)
 
         # start training
-        for idx in xrange(config.max_iteration):
+        for idx in xrange(t_config.max_iteration):
             with tf.device("/cpu:0"):
                 imgs, labels, name_list = reader.get_batch()
 
@@ -61,20 +61,20 @@ def main():
                 model.images: imgs,
                 model.labels: labels
                 }
-            with tf.device(config.gpu):
+            with tf.device(t_config.gpu):
                 # run the training operation
                 sess.run(train_op, feed_dict=feed_dict)
 
             with tf.device('/cpu:0'):
                 # write summary
-                if (idx + 1) % config.summary_iters == 0:
+                if (idx + 1) % t_config.summary_iters == 0:
                     tmp_global_step = model.global_step.eval()
                     summary = sess.run(merged, feed_dict=feed_dict)
                     writer.add_summary(summary, tmp_global_step)
                 # save checkpoint
-                if (idx + 1) % config.checkpoint_iters == 0:
+                if (idx + 1) % t_config.checkpoint_iters == 0:
                     tmp_global_step = model.global_step.eval()
-                    model.save(sess, saver, config.save_filename,
+                    model.save(sess, saver, t_config.save_filename,
                                tmp_global_step)
 
 

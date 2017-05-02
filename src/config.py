@@ -48,6 +48,9 @@ class Config(object):
     use_fp16 = False
     moving_average_decay = 0.999
 
+    # and others
+    use_fp16 = False
+
     def __init__(self):
         """Initializer."""
         pass
