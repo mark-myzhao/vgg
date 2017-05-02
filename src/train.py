@@ -13,7 +13,8 @@ def main():
     train_config = config.Config()
     with tf.Graph().as_default():
         # TODO init reader
-        reader = read_data.get_reader()
+        reader = read_data.ImageReader('../data/JPEGImages/',
+                                       '../data/labels/', train_config)
 
         # init model
         model = vgg.Vgg(train_config)
@@ -60,8 +61,7 @@ def main():
             # feed data into the model
             feed_dict = {
                 model.images: imgs,
-                model.coords: coords,
-                model.labels: fm
+                model.labels: coords
             }
             with tf.device(config.gpu):
                 # run the training operation

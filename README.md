@@ -6,18 +6,19 @@
   - `/script`: useful scripts
   - `/src`: source code
   - `/data`: training and testing dataset
-    - `/train`
-    - `/test`
+    - `/JPEGImages`
+    - `/labels`
   - `/label`: label for training
   - `/dest`: output (if any)
     - `/log`: log for tensorboard
     - `/param`: store check points
   - `/exchange`: exchange data between server and client
+  - `/tmp`: store buffer files
 
 ## Dataset Structure
 
 - `VOC2012`
-  - `/ImageSets`: labels of 21 classes
+  - `/ImageSets`: labels of 20 classes
     - `*_train.txt`: used to train model
     - `*_val.txt`: used to validate and evaluate trained model
     - `*_trainval.txt`: `*_train.txt` + `*_val.txt`

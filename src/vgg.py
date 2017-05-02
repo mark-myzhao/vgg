@@ -13,9 +13,10 @@ class Vgg(object):
     def __init__(self, config):
         """Initialize with config object."""
         # TODO
+        self.wd = config.wd
+        self.stddev = config.stddev
         self.batch_size = config.batch_size
         self.params_dir = config.params_dir
-
         self.channel_num = config.channel_num
 
         self.images = tf.placeholder(
@@ -24,7 +25,7 @@ class Vgg(object):
                    self.channel_num))
         self.labels = tf.placeholder(
             dtype=tf.float32,
-            shape=(self.batch_size, 1))
+            shape=(self.batch_size, config.class_num))
 
     def train_op(self, total_loss, global_step):
         """Get train op."""
@@ -34,7 +35,6 @@ class Vgg(object):
         grads = optimizer.compute_gradients(total_loss)
         apply_gradient_op = optimizer.apply_gradients(grads,
                                                       global_step=global_step)
-
         variable_averages = tf.train.ExponentialMovingAverage(
             self.moving_average_decay, global_step)
         variable_averages_op = variable_averages.apply(
@@ -48,18 +48,18 @@ class Vgg(object):
 
     def loss(self):
         """Get loss op."""
-        # TODO
-        pass
+        return tf.add_n(tf.get_collection('losses'), name="total_loss")
 
     def save(self, sess, saver, filename, global_step):
         """Save to check point."""
-        # TODO
-        pass
+        path = saver.save(sess, self.params_dir + filename,
+                          global_step=global_step)
+        print("Save params at " + path)
 
     def restore(self, sess, saver, filename):
         """Restore from a check point."""
-        # TODO
-        pass
+        print("Restore from previous model: ", self.params_dir+filename)
+        saver.restore(sess, self.params_dir + filename)
 
     def build_model(self, is_train):
         """Get builded vgg model."""
@@ -99,14 +99,14 @@ class Vgg(object):
                 stddev=self.stddev,
                 wd=self.wd,
                 trainable=trainable
-            )
+                )
             # fully-connected
             mul = tf.matmul(flatten_bottom, weights)
             biases = self._variable_on_cpu(
                 'biases', [out_num],
                 tf.constant_initializer(0.0),
                 trainable
-            )
+                )
             pre_activation = tf.nn.bias_add(mul, biases)
             if is_BN:
                 bn_activation = tf.layers.batch_normalization(pre_activation)
@@ -127,14 +127,14 @@ class Vgg(object):
                     stddev=self.stddev,
                     wd=self.wd,
                     trainable=trainable
-            )
+                    )
             # calculate conv
             conv = tf.nn.conv2d(bottom, kernel, [1, 1, 1, 1], padding="SAME")
             biases = self._variable_on_cpu(
                 'biases', [out_channel],
                 tf.constant_initializer(0.0),
                 trainable
-            )
+                )
             pre_activation = tf.nn.bias_add(conv, biases)
             if is_BN:
                 bn_activation = tf.layers.batch_normalization(pre_activation)
@@ -158,7 +158,7 @@ class Vgg(object):
             name, shape,
             tf.truncated_normal_initializer(stddev=stddev, dtype=dtype),
             trainable
-        )
+            )
         if wd is not None:
             weight_decay = tf.multiply(tf.nn.l2_loss(var), wd,
                                        name='weights_loss')
@@ -178,7 +178,7 @@ class Vgg(object):
             tmp = tf.expand_dims(tmp, axis=2)
             tmp = tf.expand_dims(tmp, axis=0)
             tf.summary.image(name + '-' + str(idx), tmp, max_outputs=100)
-        if (self.batch_size > 1):
+        if self.batch_size > 1:
             for idx in xrange(channels):
                 # the first batch
                 sub(0, idx)

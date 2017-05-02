@@ -10,11 +10,18 @@ class Config(object):
     steps = "-1"
     gpu = '/gpu:0'
 
+    # training config
+    class_num = 20
+
     # checkpoint path and filename
     logdir = "./log/train_log/"
     params_dir = "./params/"
     load_filename = "vgg" + '-' + steps
     save_filename = "vgg"
+
+    # buffer
+    buff_path = '../tmp/'
+    buff_tl_name = 'label_train.txt'
 
     # iterations config
     max_iteration = 100000
@@ -29,7 +36,7 @@ class Config(object):
     origin_height = 212
     origin_width = 256
     img_height = 224  # img height for training
-    img_width = 224  # img width for training
+    img_width = 224   # img width for training
     is_color = True
 
     # random distortion
