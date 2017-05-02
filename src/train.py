@@ -4,7 +4,7 @@ import config
 import read_data
 
 import os
-import datetime
+from datetime import datetime
 import tensorflow as tf
 
 
@@ -51,31 +51,31 @@ def main():
                                   datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
             writer = tf.summary.FileWriter(logdir, sess.graph)
 
-        # start training
-        for idx in xrange(t_config.max_iteration):
-            with tf.device("/cpu:0"):
-                imgs, labels, name_list = reader.get_batch()
+            # start training
+            for idx in xrange(t_config.max_iteration):
+                with tf.device("/cpu:0"):
+                    imgs, labels, name_list = reader.get_batch()
 
-            # feed data into the model
-            feed_dict = {
-                model.images: imgs,
-                model.labels: labels
-                }
-            with tf.device(t_config.gpu):
-                # run the training operation
-                sess.run(train_op, feed_dict=feed_dict)
+                # feed data into the model
+                feed_dict = {
+                    model.images: imgs,
+                    model.labels: labels
+                    }
+                with tf.device(t_config.gpu):
+                    # run the training operation
+                    sess.run(train_op, feed_dict=feed_dict)
 
-            with tf.device('/cpu:0'):
-                # write summary
-                if (idx + 1) % t_config.summary_iters == 0:
-                    tmp_global_step = model.global_step.eval()
-                    summary = sess.run(merged, feed_dict=feed_dict)
-                    writer.add_summary(summary, tmp_global_step)
-                # save checkpoint
-                if (idx + 1) % t_config.checkpoint_iters == 0:
-                    tmp_global_step = model.global_step.eval()
-                    model.save(sess, saver, t_config.save_filename,
-                               tmp_global_step)
+                with tf.device('/cpu:0'):
+                    # write summary
+                    if (idx + 1) % t_config.summary_iters == 0:
+                        tmp_global_step = model.global_step.eval()
+                        summary = sess.run(merged, feed_dict=feed_dict)
+                        writer.add_summary(summary, tmp_global_step)
+                    # save checkpoint
+                    if (idx + 1) % t_config.checkpoint_iters == 0:
+                        tmp_global_step = model.global_step.eval()
+                        model.save(sess, saver, t_config.save_filename,
+                                   tmp_global_step)
 
 
 if __name__ == '__main__':
