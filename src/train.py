@@ -20,7 +20,7 @@ def main():
         model = vgg.Vgg(train_config)
 
         # feed feedforward
-        model.build_model()
+        model.build_model(True)
 
         # return loss
         loss = model.loss()
