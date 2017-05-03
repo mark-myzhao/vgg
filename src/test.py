@@ -7,7 +7,7 @@ import tensorflow as tf
 
 
 def calculate_ap():
-    """Calculate AverP"""
+    """Calculate AverP."""
     pass
 
 
@@ -47,6 +47,7 @@ def main():
                 with tf.device(t_config.gpu):
                     # run the training operation
                     res = sess.run(predict, feed_dict=feed_dict)
+                    print(name_list[idx])
                     print(res)
 
 
