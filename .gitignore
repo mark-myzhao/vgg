@@ -6,6 +6,9 @@ dest
 param
 log
 
+# useless buffer
+*.pyc
+
 # exchange zone
 exchange
 

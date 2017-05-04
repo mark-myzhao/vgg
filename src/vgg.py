@@ -79,7 +79,6 @@ class Vgg(object):
         is_BN = True
 
         with tf.variable_scope(name):
-            # TODO Build Model Here
             conv1 = self.conv_layer(input_, 3, 64, 'conv1', is_BN, is_train)
             conv2 = self.conv_layer(conv1, 3, 64, 'conv2', is_BN, is_train)
             pool1 = tf.nn.max_pool(conv2, ksize=[1, 3, 3, 1],
@@ -109,18 +108,17 @@ class Vgg(object):
             conv11 = self.conv_layer(pool4, 3, 512, 'conv11', is_BN, is_train)
             conv12 = self.conv_layer(conv11, 3, 512, 'conv12', is_BN, is_train)
             conv13 = self.conv_layer(conv12, 3, 512, 'conv13', is_BN, is_train)
-            pool4 = tf.nn.max_pool(conv13, ksize=[1, 3, 3, 1],
+            pool5 = tf.nn.max_pool(conv13, ksize=[1, 3, 3, 1],
                                    strides=[1, 2, 2, 1],
                                    padding="SAME", name="pool3")
 
-            # change 4096 to 1028
-            fc1 = self.fc_layer(pool4, 1028, 'fc1', is_BN, is_train)
+            fc1 = self.fc_layer(pool5, 4096, 'fc1', is_BN, is_train)
             if is_train:
                 fc1 = tf.nn.dropout(fc1, 0.5)
-            fc2 = self.fc_layer(fc1, 1028, 'fc2', is_BN, is_train)
+            fc2 = self.fc_layer(fc1, 4096, 'fc2', is_BN, is_train)
             if is_train:
                 fc2 = tf.nn.dropout(fc2, 0.5)
-            final_fc = self.final_fc_layer(fc1, self.class_num,
+            final_fc = self.final_fc_layer(fc2, self.class_num,
                                            'final_fc', is_train)
             return final_fc
 
@@ -178,6 +176,9 @@ class Vgg(object):
                 [out_num],
                 tf.constant_initializer(0.0), trainable)
             top = tf.nn.bias_add(mul, biases)
+
+            # bn_activation = tf.layers.batch_normalization(top)
+            # top = tf.nn.relu(bn_activation, name=scope.name)
             # apply softmax to get probability
             top = tf.nn.softmax(top)
             self._activation_summary(top)

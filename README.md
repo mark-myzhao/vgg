@@ -15,6 +15,7 @@ Implement VGG model D (16 layers) with TensorFlow ...
     - `/log`: log for tensorboard
     - `/param`: store check points
     - `/output`: output from the shell when model is training
+    - `/result`: result generate by model testing
   - `/exchange`: exchange data between server and client
   - `/tmp`: store buffer files
 

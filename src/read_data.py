@@ -70,7 +70,6 @@ class ImageReader():
 
     def _img_preprocess(self, imgs):
         output = np.reshape(imgs, [-1, self.img_height, self.img_width, 3])
-        # print(type(output))
         for _ in xrange(3):
             output[:, :, :, _] -= self.rgb_mean[_]
         return output

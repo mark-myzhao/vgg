@@ -4,12 +4,13 @@ import os
 
 
 def handle(label_path, tmp_path):
+    """Collect Labels."""
     class_name = [
         'aeroplane', 'bicycle', 'bird', 'boat',
         'bottle', 'bus', 'car', 'cat',
         'chair', 'cow', 'diningtable', 'dog',
         'horse', 'motorbike', 'person', 'pottedplant',
-        'sheep', 'sofa', 'train', 'tvmonitor',
+        'sheep', 'sofa', 'train', 'tvmonitor'
         ]
 
     onehot = []
