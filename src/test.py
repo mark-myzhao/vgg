@@ -6,22 +6,21 @@ import read_data
 import tensorflow as tf
 
 
-def calculate_ap():
-    """Calculate AverP."""
-    pass
-
-
 def main():
     """Main Operation."""
     t_config = config.Config()
+    t_config.batch_size = 1
+    t_config.initialize = True
+    t_config.steps = '8000'
+    t_config.load_filename = 'vgg' + '-' + t_config.steps
     with tf.Graph().as_default():
-        reader = read_data.ImageReader('../data/JPEGImages/',
-                                       '../data/labels/', t_config)
+        reader = read_data.ImageReader('./data/JPEGImages/',
+                                       './data/labels/', t_config)
         # init model
         model = vgg.Vgg(t_config)
 
         # feed feedforward
-        predict = model.build_model(True)
+        predict = model.build_model(False)
 
         # initializing operation
         init_op = tf.global_variables_initializer()
@@ -47,7 +46,7 @@ def main():
                 with tf.device(t_config.gpu):
                     # run the training operation
                     res = sess.run(predict, feed_dict=feed_dict)
-                    print(name_list[idx])
+                    print(name_list[0])
                     print(res)
 
 

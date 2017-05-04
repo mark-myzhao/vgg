@@ -12,8 +12,8 @@ def main():
     """Main operations."""
     t_config = config.Config()
     with tf.Graph().as_default():
-        reader = read_data.ImageReader('../data/JPEGImages/',
-                                       '../data/labels/', t_config)
+        reader = read_data.ImageReader('./data/JPEGImages/',
+                                       './data/labels/', t_config)
 
         # init model
         model = vgg.Vgg(t_config)

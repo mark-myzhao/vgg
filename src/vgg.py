@@ -113,10 +113,11 @@ class Vgg(object):
                                    strides=[1, 2, 2, 1],
                                    padding="SAME", name="pool3")
 
-            fc1 = self.fc_layer(pool4, 4096, 'fc1', is_BN, is_train)
+            # change 4096 to 1028
+            fc1 = self.fc_layer(pool4, 1028, 'fc1', is_BN, is_train)
             if is_train:
                 fc1 = tf.nn.dropout(fc1, 0.5)
-            fc2 = self.fc_layer(fc1, 4096, 'fc2', is_BN, is_train)
+            fc2 = self.fc_layer(fc1, 1028, 'fc2', is_BN, is_train)
             if is_train:
                 fc2 = tf.nn.dropout(fc2, 0.5)
             final_fc = self.final_fc_layer(fc1, self.class_num,

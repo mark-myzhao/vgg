@@ -4,6 +4,7 @@
 """Read Data."""
 import config
 import handle_label
+import image_distort
 
 import os
 import re
@@ -30,6 +31,9 @@ class ImageReader():
         self.img_width = config.img_height
         self.img_height = config.img_height
 
+        # rgb mean precalculated
+        self.rgb_mean = (103, 111, 116)
+
         # handle labels
         label_buff_path = os.path.join(self.buff_path, self.buff_tl_name)
         if not os.path.isfile(label_buff_path):
@@ -42,7 +46,7 @@ class ImageReader():
                 filename = tmp[0] + '.jpg'
                 labels = [int(_) for _ in tmp[1:self.class_num+1]]
                 self.records.append((filename, labels))
-
+        # records: [id (labels.jpg * self.class_num)]
         self.total_size = len(self.records)
 
     def get_batch(self, distort=False, index=None):
@@ -57,8 +61,8 @@ class ImageReader():
             label_list.append(self.records[_][1])
             name_list.append(self.records[_][0])
             img = cv2.imread(os.path.join(self.data_path, self.records[_][0]))
-            # should be replaced by chop, instead of resizing
-            img = cv2.resize(img, (self.img_width, self.img_height))
+            img = image_distort.chop(img, 224)    # chop to 224 * 224
+            img = image_distort.random_flip(img)  # random flip
             img_list.append(img)
         out_imgs = self._img_preprocess(np.stack(img_list))
         out_labels = self._label_preprocess(np.stack(label_list))
@@ -66,12 +70,39 @@ class ImageReader():
 
     def _img_preprocess(self, imgs):
         output = np.reshape(imgs, [-1, self.img_height, self.img_width, 3])
-        # TODO substract mean or more preprocess
+        # print(type(output))
+        for _ in xrange(3):
+            output[:, :, :, _] -= self.rgb_mean[_]
         return output
 
     def _label_preprocess(self, label):
         output = np.reshape(label, [-1, self.class_num]).astype(np.float32)
         return output
+
+    def _calculate_rgb_mean(self):
+        """Calculate mean rgb value among training set."""
+        res_list = []
+        total_pixel = 0
+        for item in self.records:
+            img = cv2.imread(os.path.join(self.data_path, item[0]))
+            (r, g, b), pixel_num = self._calculate_img_rgb(img)
+            res_list.append([(r, g, b), pixel_num])
+            total_pixel += pixel_num
+        r_m, g_m, b_m = 0, 0, 0
+        for item in res_list:
+            r_m += item[0][0] * (float(item[1]) / float(total_pixel))
+            g_m += item[0][1] * (float(item[1]) / float(total_pixel))
+            b_m += item[0][2] * (float(item[1]) / float(total_pixel))
+        return r_m, g_m, b_m
+
+    def _calculate_img_rgb(self, img):
+        """Return aver_mean and pixel_num."""
+        pixel_num = img.shape[0] * img.shape[1]
+        r = np.sum(img[:, :, 0])
+        g = np.sum(img[:, :, 1])
+        b = np.sum(img[:, :, 2])
+        r, g, b = int(r / pixel_num), int(g / pixel_num), int(b / pixel_num)
+        return (r, g, b), pixel_num
 
 
 def main():

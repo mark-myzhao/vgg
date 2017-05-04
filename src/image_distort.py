@@ -4,15 +4,14 @@ import numpy as np
 import random
 
 
-def print_img(filename, name='test'):
+def print_img(src, name='test'):
     """Print image for testing."""
-    cv2.imshow(name, filename)
+    cv2.imshow(name, src)
     cv2.waitKey(0)
 
 
-def flip(filename, horizon=True, vertical=True):
+def flip(src, horizon=True, vertical=True):
     """Filp the image, horizonly by default."""
-    src = cv2.imread(filename)
     h = -1 if horizon else 1
     v = -1 if vertical else 1
     res = src[::v, ::h]
@@ -20,13 +19,12 @@ def flip(filename, horizon=True, vertical=True):
     return res
 
 
-def rotate(filename, rotate_angle, ratio):
+def rotate(src, rotate_angle, ratio):
     """Rotate image.
 
     Args:
         ratio: bigger/smaller ratio
     """
-    src = cv2.imread(filename)
     rows, cols = src.shape[:2]
     M = cv2.getRotationMatrix2D((cols/2, rows/2), rotate_angle, ratio)
     res = cv2.warpAffine(src, M, (rows, cols))
@@ -35,25 +33,22 @@ def rotate(filename, rotate_angle, ratio):
     return res
 
 
-def translation(filename, dis_x, dis_y):
+def translation(src, dis_x, dis_y):
     """Shift Image.
 
     Args:
         x: dis_x
         y: dis_y
     """
-    src = cv2.imread(filename)
     H = np.float32([[1, 0, dis_x], [0, 1, dis_y]])
     rows, cols = src.shape[:2]
     res = cv2.warpAffine(src, H, (rows, cols))
-
     # print_img(res, 'res')
     return res
 
 
-def changeRGB(filename, n):
+def changeRGB(src, n):
     """Randomly change the RGB value of n pixels."""
-    src = cv2.imread(filename)
     rows, cols = src.shape[:2]
     for k in range(n):  # Create 5000 noisy pixels
         i = random.randint(0, rows-1)
@@ -67,13 +62,12 @@ def changeRGB(filename, n):
     return src
 
 
-def crop(filename, des_size):
+def chop(src, des_size=224):
     """Random Crop.
 
     Args:
-        des_size: the size of the target image, for example 224.
+        des_size: the size of the target image, by default 224.
     """
-    src = cv2.imread(filename)
     rows, cols = src.shape[:2]
 
     min_side = rows if rows < cols else cols
@@ -99,13 +93,22 @@ def crop(filename, des_size):
     return des
 
 
+def random_flip(src):
+    """Random Flip."""
+    r_h = random.randint(0, 100)
+    r_v = random.randint(0, 100)
+    r_h = True if r_h >= 50 else False
+    r_v = True if r_v >= 50 else False
+    return flip(src, r_h, r_v)
+
+
 def main():
     """Test Module."""
-    flip("../tmp/test.jpg")
+    # flip("../tmp/test.jpg")
     # rotate("../tmp/test.jpg", 180, 1)
     # translation("../tmp/test.jpg", 50, 10)
     # changeRGB("../tmp/test.jpg", 2000)
-    # crop("../tmp/test.jpg", 224)
+    # chop("../tmp/test.jpg", 224)
 
 
 if __name__ == '__main__':

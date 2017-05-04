@@ -1,2 +1,2 @@
 # check training process with tensorboard
-tensorboard --logdir=../dest/log/
+tensorboard --logdir=./dest/log/

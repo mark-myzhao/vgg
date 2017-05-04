@@ -5,7 +5,7 @@ class Config(object):
     """Config."""
 
     # util
-    batch_size = 1
+    batch_size = 50
     initialize = True
     steps = '-1'
     gpu = '/gpu:0'
@@ -14,13 +14,13 @@ class Config(object):
     class_num = 20
 
     # checkpoint path and filename
-    logdir = '../dest/log/'
-    params_dir = '../dest/params/'
+    logdir = './dest/log/'
+    params_dir = './dest/params/'
     load_filename = 'vgg' + '-' + steps
     save_filename = 'vgg'
 
     # buffer
-    buff_path = '../tmp/'
+    buff_path = './tmp/'
     buff_tl_name = 'label_train.txt'
 
     # iterations config

@@ -1,2 +1,2 @@
 # run in background
-nohup python train.py > ./dest/output/nohup.out &
+nohup python ./src/train.py > ./dest/output/nohup.out &
