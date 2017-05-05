@@ -19,6 +19,8 @@ VGG主要探究了随着卷积神经网络层数的增加，模型的所发生�
 1. 堆叠排放(stack)而相对小receptive区域的卷积层比单层大receptive区域的效果好。能更有效地提取特征同时减少参数总量。
 2. 合适的初始化有利于模型，特别是深度网络的训练。
 
+
+
 ### 1.2 VGG网络结构
 
 VGG模型使用更深的网络以获取更好的性能，所有激活函数使用ReLU，网络结构主要包括以下几个方面：
@@ -44,7 +46,9 @@ VGG模型使用更深的网络以获取更好的性能，所有激活函数使�
 
 #### 1.2.4 Drop Out层
 
-- 两个全连接层后面会接上Drop Out，作用是训练时会随机丢弃一些节点
+- 两个全连接层后面会接上Drop Out，作用是训练时会随机丢弃一些节点，以减少模型对某些节点过高的依赖性，使其更加普适
+
+
 
 ### 1.3 实现细节
 
@@ -73,9 +77,8 @@ VGG模型使用更深的网络以获取更好的性能，所有激活函数使�
 
 - 用top1-error和top5-error对模型进行评估
   - Singal Scale Evalution: 经过验证表明，更深次的网络、更小的filter效果较好
-  - Multi-Scale Evalution:
-  - Multi-Crop Evalution:
-  - Convent Fushion:
+
+  ​
 
 
 
@@ -83,9 +86,13 @@ VGG模型使用更深的网络以获取更好的性能，所有激活函数使�
 
 我们在本次试验中实现的是论文中给出的D网络，具体配置为：
 
-- 13 卷积层 + 3 全连接层
+- 13 卷积层 + 3 全连接层（4096 4096 20）
 - 卷积层：64 * 2, 128 * 2, 256 * 3, 512 * 3, 512 * 3
 - 参数数量：138 million
+
+TensorBoard:
+
+![](./tmp/vgg-net.png)
 
 搭建VGG网络部分Code（更细节的部分已经加以封装，可以查看[源码](https://github.com/alex-myzhao/vgg)）：
 
@@ -134,10 +141,6 @@ final_fc = self.final_fc_layer(fc2, self.class_num,
 return final_fc
 ```
 
-TensorBoard:
-
-![](./tmp/vgg-net.png)
-
 
 
 ## 三、训练细节
@@ -160,10 +163,12 @@ TensorBoard:
   - 训练集：VOC 2012 Test
   - 测试集：VOC 2012 Validation
 - Batch size: 32
-- Learning rate
-- Iteration
-- Loss曲线
+- Learning rate: 0.001
+- Iteration: 6000k
+- Loss曲线: 
 
+
+![loss-curve](./tmp/loss-curve.png)
 
 
 ## 四、评估
@@ -171,3 +176,8 @@ TensorBoard:
 - 本实验中使用到的方法：
   - 定量：为每一类别计算AverP，并最终计算mean AverP
   - 定性：观察对输入图片的分类情况
+- 计算：
+  - AP：对于每一类别，将模型的分类按照输出概率从大到小排序，记作logits；然后从groundtruth的label中提取符合这里类别的图片编号；再对之前的logits进行遍历，遇到正确分类时，累加`当前正确分类个数／总共遍历个数`；最后除以符合类别图片总数即可得到这一类别的AverP
+  - mean AverP：对于每一类别分别计算AP，然后求的平均值即为mean AverP
+- 由于时间原因目前训练的模型尚未达到最优性能，还在继续调参中。。。
+- [项目源码](https://github.com/alex-myzhao/vgg)

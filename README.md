@@ -33,3 +33,15 @@ Source: [VOC2012](http://host.robots.ox.ac.uk/pascal/VOC/)
 - ps. `.txt` format:
   - for valid images: `id_of_imgs  1` per line
   - for invalid images: `id_of_imgs -1` per line
+
+## Run
+
+- First, run:
+```shell
+chmod +x ./script/*
+./script/init.sh
+```
+
+- Place your data and label in the right directory.
+- Then you can run with `./script/run.sh`
+- Or use tensorboard to check with `./script/check.sh`

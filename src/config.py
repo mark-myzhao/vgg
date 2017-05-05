@@ -31,8 +31,6 @@ class Config(object):
 
     # image config
     channel_num = 3  # RGB
-    origin_height = 212
-    origin_width = 256
     img_height = 224  # img height for training
     img_width = 224   # img width for training
     is_color = True
